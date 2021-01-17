@@ -1,5 +1,1 @@
-Aphelion | Perihelion 
-:-------------------------:|-------
-&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; [![Spotify](https://novatorem.vercel.app/api/spotify)](https://open.spotify.com/user/omnitenebris)<br>|<div style="text-align: justify">You should use the new version of the readme, [here](https://github.com/novatorem/novatorem)
-
-[//]: <> (The `&nbsp;` is to have Aphelion take up more space)
+[<img src="https://spotify-now-playing-nv3hb9i9h.vercel.app/api/spotify-playing" alt="Délita MAKANDA Spotify Playing" width="350" />](https://open.spotify.com/user/delita.makanda)
