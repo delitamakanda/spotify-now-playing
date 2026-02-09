@@ -1,4 +1,4 @@
-[<img src="https://spotify-now-playing-nv3hb9i9h.vercel.app/api/spotify-playing" alt="Délita MAKANDA Spotify Playing" width="350" />](https://open.spotify.com/user/delita.makanda)
+[<img src="https://spotify-now-playing-iota-three.vercel.app/api/spotify-playing" alt="Délita MAKANDA Spotify Playing" width="350" />](https://open.spotify.com/user/delita.makanda)
 
 ---
 [![E-Mail](https://img.shields.io/badge/email-reveal-2a8?style=flat-square&logo=gmail&logoColor=white)](https://mailhide.io/e/7Z9YnmXq)
