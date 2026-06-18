@@ -11,7 +11,6 @@ import random
 
 SPOTIFY_CLIENT_ID = os.getenv("SPOTIFY_CLIENT_ID")
 SPOTIFY_SECRET_ID = os.getenv("SPOTIFY_SECRET_ID")
-SPOTIFY_REFRESH_TOKEN = os.getenv("SPOTIFY_REFRESH_TOKEN")
 
 # scope user-read-currently-playing/user-read-recently-played
 SPOTIFY_URL_REFRESH_TOKEN = "https://accounts.spotify.com/api/token"
@@ -31,9 +30,10 @@ class InvalidGrantError(Exception):
 
 
 def refreshToken():
+    refresh_token = os.getenv("SPOTIFY_REFRESH_TOKEN")
     data = {
         "grant_type": "refresh_token",
-        "refresh_token": SPOTIFY_REFRESH_TOKEN,
+        "refresh_token": refresh_token,
     }
 
     headers = {"Authorization": "Basic {}".format(getAuth())}
