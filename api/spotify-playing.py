@@ -26,6 +26,10 @@ def getAuth():
     return b64encode(f"{SPOTIFY_CLIENT_ID}:{SPOTIFY_SECRET_ID}".encode()).decode("ascii")
 
 
+class InvalidGrantError(Exception):
+    """Raised when the Spotify refresh token has expired or been revoked."""
+
+
 def refreshToken():
     data = {
         "grant_type": "refresh_token",
@@ -35,7 +39,17 @@ def refreshToken():
     headers = {"Authorization": "Basic {}".format(getAuth())}
 
     response = requests.post(SPOTIFY_URL_REFRESH_TOKEN, data=data, headers=headers)
-    return response.json()["access_token"]
+    body = response.json()
+
+    if "error" in body:
+        if body["error"] == "invalid_grant":
+            raise InvalidGrantError(
+                "Refresh token has expired or been revoked. "
+                "Generate a new refresh token and update SPOTIFY_REFRESH_TOKEN."
+            )
+        raise Exception(f"Spotify token error: {body['error']} - {body.get('error_description', '')}")
+
+    return body["access_token"]
 
 def recentlyPlayed():
     token = refreshToken()
@@ -107,14 +121,19 @@ def makeSVG(data):
 @app.route("/", defaults={"path": ""})
 @app.route("/<path:path>")
 def catch_all(path):
-
-    data = nowPlaying()
-    svg = makeSVG(data)
-
-    resp = Response(svg, mimetype="image/svg+xml")
-    resp.headers["Cache-Control"] = "s-maxage=1"
-
-    return resp
+    try:
+        data = nowPlaying()
+        svg = makeSVG(data)
+        resp = Response(svg, mimetype="image/svg+xml")
+        resp.headers["Cache-Control"] = "s-maxage=1"
+        return resp
+    except InvalidGrantError:
+        return Response(
+            "Spotify refresh token has expired or been revoked. "
+            "Generate a new refresh token and update SPOTIFY_REFRESH_TOKEN.",
+            status=401,
+            mimetype="text/plain",
+        )
 
 if __name__ == "__main__":
     app.run(debug=True)
