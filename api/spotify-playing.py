@@ -1,13 +1,13 @@
-from flask import Flask, Response, jsonify, render_template
+from flask import Flask, Response, render_template
 from base64 import b64encode
 
 from dotenv import load_dotenv, find_dotenv
 load_dotenv(find_dotenv())
 
 import requests
-import json
 import os
 import random
+from upstash_redis import Redis
 
 SPOTIFY_CLIENT_ID = os.getenv("SPOTIFY_CLIENT_ID")
 SPOTIFY_SECRET_ID = os.getenv("SPOTIFY_SECRET_ID")
@@ -18,8 +18,29 @@ SPOTIFY_URL_REFRESH_TOKEN = "https://accounts.spotify.com/api/token"
 SPOTIFY_URL_NOW_PLAYING = "https://api.spotify.com/v1/me/player/currently-playing"
 SPOTIFY_URL_RECENTLY_PLAY = "https://api.spotify.com/v1/me/player/recently-played?limit=10"
 
+REDIS_KEY = "spotify_refresh_token"
 
 app = Flask(__name__)
+
+_redis = None
+
+def get_redis():
+    global _redis
+    if _redis is None:
+        url = os.getenv("KV_REST_API_URL")
+        token = os.getenv("KV_REST_API_TOKEN")
+        if url and token:
+            _redis = Redis(url=url, token=token)
+    return _redis
+
+
+def get_refresh_token():
+    r = get_redis()
+    if r:
+        stored = r.get(REDIS_KEY)
+        if stored:
+            return stored
+    return SPOTIFY_REFRESH_TOKEN
 
 
 def getAuth():
@@ -29,13 +50,25 @@ def getAuth():
 def refreshToken():
     data = {
         "grant_type": "refresh_token",
-        "refresh_token": SPOTIFY_REFRESH_TOKEN,
+        "refresh_token": get_refresh_token(),
     }
 
     headers = {"Authorization": "Basic {}".format(getAuth())}
 
     response = requests.post(SPOTIFY_URL_REFRESH_TOKEN, data=data, headers=headers)
-    return response.json()["access_token"]
+    response_data = response.json()
+
+    if response.status_code != 200 or "access_token" not in response_data:
+        error = response_data.get("error", "unknown")
+        raise Exception(f"Spotify token refresh failed ({error}): re-authorization required.")
+
+    # Persist rotated refresh token so it never expires
+    if "refresh_token" in response_data:
+        r = get_redis()
+        if r:
+            r.set(REDIS_KEY, response_data["refresh_token"])
+
+    return response_data["access_token"]
 
 def recentlyPlayed():
     token = refreshToken()
