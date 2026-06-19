@@ -39,7 +39,11 @@ def get_refresh_token():
     if r:
         stored = r.get(REDIS_KEY)
         if stored:
+            print("[token] source: redis")
             return stored
+        print("[token] redis vide, fallback env")
+    else:
+        print("[token] redis indisponible, fallback env")
     return SPOTIFY_REFRESH_TOKEN
 
 
